@@ -1,0 +1,29 @@
+<powershell>
+Set-ExecutionPolicy Unrestricted
+
+### Download and install the CloudWatch Agent on the EC2 instance
+$parameters = @{
+	Uri = 'https://s3.amazonaws.com/amazoncloudwatch-agent/windows/amd64/latest/AmazonCloudWatchAgent.zip'
+	OutFile = "$env:TEMP\AmazonCloudWatchAgent.zip"
+}
+Invoke-WebRequest @parameters
+
+Expand-Archive -Path "$env:TEMP\AmazonCloudWatchAgent.zip" -DestinationPath "$env:TEMP\AmazonCloudWatchAgent"
+
+Set-Location -Path "$env:TEMP\AmazonCloudWatchAgent"
+.\install.ps1
+### end
+
+### Download and copy config.json file
+$parameters = @{
+	Uri = 'https://alorro-cw-agent.s3.amazonaws.com/config.json'
+	OutFile = "C:\Program Files\Amazon\AmazonCloudWatchAgent\config.json"
+}
+Invoke-WebRequest @parameters
+### end
+
+### Start Cloudwatch agent
+& "C:\Program Files\Amazon\AmazonCloudWatchAgent\amazon-cloudwatch-agent-ctl.ps1" -a fetch-config -m ec2 -c file:'C:\Program Files\Amazon\AmazonCloudWatchAgent\config.json' -s
+### end
+
+</powershell>
