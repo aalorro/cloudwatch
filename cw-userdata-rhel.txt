@@ -1,0 +1,15 @@
+#!/bin/bash
+
+### Download and install AWS CLI
+#
+#curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+#unzip awscli-bundle.zip
+#./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+###
+### Download and install Cloudwatch agent and config file
+
+/usr/local/bin/aws s3 cp s3://cfg-ss-poc-infra-dev/awslogs-agent-setup.py /
+/usr/local/bin/aws s3 cp s3://cfg-ss-poc-infra-dev/AgentDependencies.tar.gz /
+tar xvf AgentDependencies.tar.gz -C /tmp/
+chmod +x ./awslogs-agent-setup.py
+sudo python ./awslogs-agent-setup.py --region us-east-1 --dependency-path /tmp/AgentDependencies -c s3://cfg-ss-poc-infra-dev/config
